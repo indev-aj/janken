@@ -93,47 +93,57 @@ def generate_policy_exploitation(my_history, opponent_history,
         You must fill here
         Find the value for rock, scissor and paper
     """
-    rock = paper = scissor = 0
+    # print(f"My Action 1: {my_history[0]}   He Action 1: {opponent_history[0]}")
+    # print(f"My Action 2: {my_history[1]}   He Action 2: {opponent_history[1]}")
+
+    rock_count = paper_count = scissor_count = 0
+    rock_chance = paper_chance = scissor_chance = 0
 
     for i in opponent_history:
         if i == "rock":
-            rock += 1
+            rock_count += 1
         if i == "paper":
-            paper += 1
+            paper_count += 1
         if i == "scissor":
-            scissor += 1
+            scissor_count += 1
 
-    rock /= 1000
-    scissor /= 1000
-    paper /= 1000
+    rock_count /= len(opponent_history)
+    scissor_count /= len(opponent_history)
+    paper_count /= len(opponent_history)
 
     stats = {
-        "rock": rock,
-        "scissor": scissor,
-        "paper": paper
+        "rock": rock_count,
+        "scissor": scissor_count,
+        "paper": paper_count
     }
 
-    # choice = max(stats.items(), key=operator.itemgetter(1))[0]
     choice = max(stats, key=stats.get)
 
     if (choice == "rock"):
-        return {
-            "rock": 0,
-            "scissor": 0,
-            "paper": 1
-        }
+        paper_chance += 0.5
     elif (choice == "scissor"):
-        return {
-            "rock": 1,
-            "scissor": 0,
-            "paper": 0
-        }
+        rock_chance += 0.5
     elif (choice == "paper"):
-        return {
-            "rock": 0,
-            "scissor": 1,
-            "paper": 0
-        }
+        scissor_chance += 0.5
+    
+    if (my_form_last_time == "rock" and opponent_form_last_time == "scissor") or (my_form_last_time == "scissor" and opponent_form_last_time == "paper"):
+        scissor_chance += 0.5
+    elif (my_form_last_time == "scissor" and opponent_form_last_time == "paper") or (my_form_last_time == "rock" and opponent_form_last_time == "paper"):
+        paper_chance += 0.5
+    elif (my_form_last_time == "paper" and opponent_form_last_time == "rock") or my_form_last_time == "paper" and opponent_form_last_time == "rock":
+        rock_chance += 0.5
+    elif (my_form_last_time == opponent_form_last_time):
+        print("Draw")
+        rock_chance = 0.3333
+        scissor_chance = 0.3333
+        paper_chance = 0.3334
+
+
+    return {
+        "rock": rock_chance,
+        "scissor": scissor_chance,
+        "paper": paper_chance
+    }
 
 
 def run(difficulty='easy'):
@@ -180,6 +190,9 @@ def run(difficulty='easy'):
             statistics['my_form_last_time'], statistics['opponent_form_last_time'])])
         result = evalute_rsp(my_action, opponent_action)
         result_sum += result
+
+        # print(f"Opponent Before: {statistics['opponent_form_last_time']}  Me Before: {statistics['my_form_last_time']}")
+        # print(f"Opponent Now: {opponent_action}  Me Now: {my_action}")
 
         statistics['my_form_last_time'] = my_action
         statistics['opponent_form_last_time'] = opponent_action

@@ -1,7 +1,7 @@
 from random import uniform
 from math import exp
 
-import operator
+# import operator
 
 mapper = ["rock", "scissor", "paper"]
 
@@ -46,7 +46,7 @@ def sample(p):
     q = []
     for x in p:
         r += p[x]
-        q.append(r)  
+        q.append(r)
 
     v = uniform(0, 1)
     for i in range(3):
@@ -107,24 +107,33 @@ def generate_policy_exploitation(my_history, opponent_history,
     scissor /= 1000
     paper /= 1000
 
-    stats = {"rock": rock,
-             "scissor": scissor,
-             "paper": paper}
+    stats = {
+        "rock": rock,
+        "scissor": scissor,
+        "paper": paper
+    }
 
-    choice = max(stats.items(), key=operator.itemgetter(1))[0]
+    # choice = max(stats.items(), key=operator.itemgetter(1))[0]
+    choice = max(stats, key=stats.get)
 
     if (choice == "rock"):
-        return {"rock": 0.1,
-                "scissor": 0.1,
-                "paper": 0.8}
+        return {
+            "rock": 0,
+            "scissor": 0,
+            "paper": 1
+        }
     elif (choice == "scissor"):
-        return {"rock": 0.8,
-                "scissor": 0.1,
-                "paper": 0.1}
+        return {
+            "rock": 1,
+            "scissor": 0,
+            "paper": 0
+        }
     elif (choice == "paper"):
-        return {"rock": 0.1,
-                "scissor": 0.8,
-                "paper": 0.1}
+        return {
+            "rock": 0,
+            "scissor": 1,
+            "paper": 0
+        }
 
 
 def run(difficulty='easy'):
@@ -148,8 +157,7 @@ def run(difficulty='easy'):
     # Exploration Phase
     for i in range(1000):
         my_policy = generate_policy_exploration(**statistics)
-        
-        my_action = sample(my_policy)  
+        my_action = sample(my_policy)
 
         opponent_action = sample(opponent_policy[(
             statistics['my_form_last_time'], statistics['opponent_form_last_time'])])
